@@ -23,9 +23,16 @@ public class Program2 {
 		list.forEach(System.out::println);
 		
 		System.out.println("=== TEST 3: seller insert ===");
-		Department department2 = new Department(5,"Musica");
+		Department department2 = new Department(8,"Musica");
 		departmentDao.insert(department2);
 		System.out.println("Inserted! New id = " + department2.getId());
+		
+		System.out.println("=== TEST 4: department update ===");
+		department = departmentDao.findById(1);
+		department.setName("Food");
+		departmentDao.update(department);
+		System.out.println("Update Completed");
+		
 		
 	}
 
