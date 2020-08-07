@@ -26,39 +26,35 @@ public class SellerDaoJDBC implements SellerDao {
 	}
 
 	@Override
-	public void insert(Seller seller) {
-
-		PreparedStatement preparedStatement = null;
+	public void insert(Seller obj) {
+		PreparedStatement st = null;
 		try {
-			preparedStatement = connection.prepareStatement("INSERT INTO seller\r\n"
-					+ "(Name, Email, BirthDate, BaseSalary, DepartmentId) " + "VALUES " + "(?, ?, ?, ?, ?)",
-					Statement.RETURN_GENERATED_KEYS);
+			st = connection.prepareStatement("INSERT INTO seller " + "(Name, Email, BirthDate, BaseSalary, DepartmentId) "
+					+ "VALUES " + "(?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
-			preparedStatement.setString(1, seller.getName());
-			preparedStatement.setString(2, seller.getEmail());
-			preparedStatement.setDate(3, new java.sql.Date(seller.getBirthDate().getTime()));
-			preparedStatement.setDouble(4, seller.getBaseSalary());
-			preparedStatement.setInt(5, seller.getDepartment().getId());
+			st.setString(1, obj.getName());
+			st.setString(2, obj.getEmail());
+			st.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+			st.setDouble(4, obj.getBaseSalary());
+			st.setInt(5, obj.getDepartment().getId());
 
-			int rowsAffected = preparedStatement.executeUpdate();
+			int rowsAffected = st.executeUpdate();
 
 			if (rowsAffected > 0) {
-				ResultSet resultSet = preparedStatement.getGeneratedKeys();
-				if (resultSet.next()) {
-					int id = resultSet.getInt(1);
-					seller.setId(id);
+				ResultSet rs = st.getGeneratedKeys();
+				if (rs.next()) {
+					int id = rs.getInt(1);
+					obj.setId(id);
 				}
-				DB.closeResultSet(resultSet);
+				DB.closeResultSet(rs);
 			} else {
 				throw new DbException("Unexpected error! No rows affected!");
 			}
-
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		} finally {
-			DB.closeStatment(preparedStatement);
+			DB.closeStatment(st);
 		}
-
 	}
 
 	@Override
@@ -135,7 +131,7 @@ public class SellerDaoJDBC implements SellerDao {
 		seller.setName(resultSet.getString("Name"));
 		seller.setEmail(resultSet.getString("Email"));
 		seller.setBaseSalary(resultSet.getDouble("BaseSalary"));
-		seller.setBirthDate(new java.util.Date(resultSet.getTimestamp("BirthDate").getTime())); 
+		seller.setBirthDate(new java.util.Date(resultSet.getTimestamp("BirthDate").getTime()));
 		seller.setDepartment(department);
 		return seller;
 	}
